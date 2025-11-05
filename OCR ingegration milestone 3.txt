@@ -1,0 +1,52 @@
+AI Document Assistant with OCR & PDF Analysis
+
+Overview
+This project is an advanced AI-powered document assistant built using Streamlit, Ollama (LLaMA 3), Tesseract OCR, and PyPDF2.
+It allows users to upload images or PDF documents, automatically extract text, analyze sentiment, and interact with the document through an intelligent chat interface powered by LLaMA 3.
+
+System Architecture:
+Workflow:
+User → Streamlit UI → OCR/PDF Extractor → LLaMA 3 (via Ollama API) → Response → Display/Report
+
+Key Components:
+Frontend (Streamlit): Provides a clean, modern, and interactive UI for uploading, previewing, and chatting with documents.
+OCR Engine (Tesseract): Extracts text from uploaded images.
+PDF Reader (PyPDF2): Reads and extracts textual data from PDF pages.
+Sentiment Analysis (TextBlob): Detects overall tone (Positive, Negative, Neutral).
+LLM Engine (LLaMA 3 via Ollama): Answers document-based queries or provides summaries.
+
+Libraries & Tools Used:
+Streamlit: Used as the main UI framework to create an interactive and responsive web interface for document upload, display, and AI chat.
+pytesseract & PIL (Pillow): Power the OCR functionality, enabling accurate text extraction from images.
+PyPDF2: Handles PDF processing by reading and extracting text from multi-page PDF documents.
+Ollama (LLaMA 3): Acts as the AI chat model, generating contextual and document-based responses to user queries.
+TextBlob: Performs sentiment analysis to determine whether the document’s tone is positive, negative, or neutral.
+requests, json, datetime: Manage HTTP API communication, handle data structures, and record timestamps for reports and logs.
+
+
+Setup Instructions:
+
+1. Clone Repository
+git clone https://github.com/yourusername/ai-document-assistant.git
+cd ai-document-assistant
+
+2. Install Dependencies
+pip install streamlit pytesseract pillow PyPDF2 textblob requests
+
+3. Install and Configure Tesseract OCR
+Windows:
+Download from  https://github.com/UB-Mannheim/tesseract/wiki
+Example installation path:
+C:\Program Files\Tesseract-OCR\tesseract.exe
+
+4. Install Ollama and Pull LLaMA 3 Model
+Download Ollama
+Then run:
+ollama pull llama3
+
+5. Run the Application
+streamlit run app.py
+
+6. Access in Browser
+Open your browser at:
+ http://localhost:8501
