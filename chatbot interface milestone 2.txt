@@ -1,0 +1,86 @@
+🦙 LLaMA 3 Chatbot – Streamlit Interface
+
+Overview
+This project is a Streamlit-based web interface for interacting with Meta’s LLaMA 3 model using the LangChain framework and Ollama as the local model server.
+The chatbot provides a real-time conversational interface where users can ask questions, and responses are generated using the locally hosted LLaMA 3 model.
+
+System Architecture
+
+Workflow:
+User → Streamlit UI → LangChain Interface → Ollama (LLaMA 3) → Response → Streamlit Display
+Frontend (Streamlit): Handles user input/output, chat session management, and message rendering.
+Middleware (LangChain): Manages conversation flow using ChatPromptTemplate and MessagesPlaceholder.
+Backend (Ollama): Executes the LLaMA 3 model locally to generate responses.
+
+Technologies & Libraries Used:
+Component	Library / Tool	Purpose
+UI Framework	Streamlit	Builds an interactive, browser-based chatbot interface
+LLM Integration	LangChain	Manages LLM pipelines, prompt templates, and message structures
+Local Model Runner	Ollama	Runs LLaMA 3 locally without cloud dependency
+Model	LLaMA 3	The core AI model for text generation
+Data Handling	LangChain Core Messages	Structures conversations as HumanMessage and AIMessage
+
+Code Summary:
+
+1. Imports
+Imports necessary libraries:
+streamlit for UI
+langchain_community.llms.Ollama to connect to the local LLaMA 3 model
+langchain_core.messages for chat history objects
+ChatPromptTemplate and MessagesPlaceholder for prompt structure
+
+2. Streamlit Page Configuration
+st.set_page_config(page_title="Llama3 Chatbot", page_icon="🦙")
+Sets the title and favicon for the web page.
+
+3. Session State Management
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
+Maintains message history across user interactions within a session.
+
+4. Model Loading
+@st.cache_resource
+def load_llm():
+    return Ollama(model="llama3")
+Caches the LLaMA 3 model to prevent reloading it on every rerun.
+Includes error handling to notify the user if Ollama is not running or not installed.
+
+5. Prompt Template & Chain
+prompt = ChatPromptTemplate.from_messages([
+    ("system", "You are a helpful, respectful, and honest AI assistant."),
+    MessagesPlaceholder(variable_name="chat_history"),
+    ("human", "{input}")
+])
+chain = prompt | llm
+Defines a conversation prompt that includes:
+A system instruction to set the chatbot’s behavior.
+Chat history to maintain context.
+Human input for the current query.
+The prompt and model are piped together to create an execution chain.
+
+6. Displaying Chat History
+Displays all past messages in the chat interface using Streamlit’s st.chat_message() component.
+
+7. User Input & Response Generation
+Captures user input through st.chat_input().
+Displays the user message immediately.
+Sends the input and previous chat context to the model chain for response generation.
+Displays the AI’s response and stores it in the session state.
+
+8. Error Handling
+Shows appropriate error messages if:
+The model fails to load.
+Ollama is not installed or running.
+LLaMA 3 is not downloaded.
+
+Setup Instructions:
+Install Requirements
+pip install streamlit langchain langchain-community
+
+Install Ollama
+Download and install Ollama
+Download the LLaMA 3 Model
+command:
+ollama pull llama3
+Run the App
+streamlit run app.py
