@@ -6,3 +6,7 @@ textblob
 requests
 jsonschema
 datetime
+langchain
+langchain-core
+langchain-community
+ollama
