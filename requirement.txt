@@ -4,3 +4,5 @@ Pillow
 PyPDF2
 textblob
 requests
+jsonschema
+datetime
