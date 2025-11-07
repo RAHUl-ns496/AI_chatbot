@@ -1,5 +1,5 @@
 streamlit
-import pytesseract
+pytesseract
 Pillow
 PyPDF2
 textblob
