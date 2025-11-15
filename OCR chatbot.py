@@ -8,6 +8,7 @@ import json
 import time
 from datetime import datetime
 import os
+from llm_client import ask_llm
 
 # -----------------------------------------------------------
 # 🎨 Custom CSS for Modern UI
@@ -180,32 +181,9 @@ def extract_text_from_pdf(uploaded_pdf):
         return f"⚠️ PDF reading failed: {str(e)}"
 
 def ask_llama3(prompt, model):
-    try:
-        response = requests.post(
-            "http://localhost:11434/api/generate",
-            json={"model": model, "prompt": prompt, "stream": True},
-            stream=True,
-            timeout=120
-        )
-        response.raise_for_status()
-        
-        full_reply = ""
-        for chunk in response.iter_lines():
-            if chunk:
-                try:
-                    decoded = chunk.decode("utf-8", errors="ignore")
-                    data = json.loads(decoded)
-                    if "response" in data:
-                        full_reply += data["response"]
-                        yield full_reply
-                    if data.get("done"):
-                        break
-                except (json.JSONDecodeError, UnicodeDecodeError):
-                    continue
-    except requests.exceptions.RequestException as e:
-        yield f"❌ Connection error: {str(e)}"
-    except Exception as e:
-        yield f"❌ Unexpected error: {str(e)}"
+    # backward-compatible wrapper name: stream partial responses from unified client
+    for partial in ask_llm(prompt, model):
+        yield partial
 
 def generate_report():
     report = []
