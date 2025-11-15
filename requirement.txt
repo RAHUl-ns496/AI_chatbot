@@ -1,12 +1,7 @@
 streamlit
+pillow
 pytesseract
-Pillow
 PyPDF2
 textblob
 requests
-jsonschema
-datetime
-langchain
-langchain-core
-langchain-community
-ollama
+openai
