@@ -13,7 +13,7 @@ except Exception:
 def ask_llm(prompt: str, model: str = "gpt-4"):
     """
     Unified LLM interface:
-    - If OPENAI_API_KEY is set and openai package available -> call OpenAI with streaming
+    - If OPENAI_API_KEY is set and openai package available -> call OpenAI with streaming (requires openai>=1.0.0)
     - Else, if OLLAMA_HOST is set (or default localhost:11434) -> call Ollama streaming endpoint
     This function yields partial responses (generator) to match the existing app streaming code.
     """
@@ -23,46 +23,23 @@ def ask_llm(prompt: str, model: str = "gpt-4"):
     # --- OpenAI path (streaming) ---
     if openai_key and openai is not None:
         try:
-            # Try using the new OpenAI v1.0+ API first
-            if hasattr(openai, 'OpenAI'):
-                client = openai.OpenAI(api_key=openai_key)
-                resp = client.chat.completions.create(
-                    model=model,
-                    messages=[{"role": "user", "content": prompt}],
-                    max_tokens=1024,
-                    temperature=0.2,
-                    stream=True,
-                )
-                full_text = ""
-                for event in resp:
-                    if event.choices and len(event.choices) > 0:
-                        delta = event.choices[0].delta
-                        content = getattr(delta, 'content', None)
-                        if content:
-                            full_text += content
-                            yield full_text
-            else:
-                # Fall back to legacy API (v0.x)
-                openai.api_key = openai_key
-                resp = openai.ChatCompletion.create(
-                    model=model,
-                    messages=[{"role": "user", "content": prompt}],
-                    max_tokens=1024,
-                    temperature=0.2,
-                    stream=True,
-                )
-                full_text = ""
-                for event in resp:
-                    if hasattr(event, 'choices') and len(event.choices) > 0:
-                        delta = event.choices[0].delta
-                        # Legacy API: delta can be dict or object
-                        if isinstance(delta, dict):
-                            content = delta.get('content', '')
-                        else:
-                            content = getattr(delta, 'content', '')
-                        if content:
-                            full_text += content
-                            yield full_text
+            # Use OpenAI v1.0+ API (required)
+            client = openai.OpenAI(api_key=openai_key)
+            resp = client.chat.completions.create(
+                model=model,
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=1024,
+                temperature=0.2,
+                stream=True,
+            )
+            full_text = ""
+            for event in resp:
+                if event.choices and len(event.choices) > 0:
+                    delta = event.choices[0].delta
+                    content = getattr(delta, 'content', None)
+                    if content:
+                        full_text += content
+                        yield full_text
         except Exception as e:
             yield f"❌ OpenAI error: {e}"
         return
