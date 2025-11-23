@@ -24,22 +24,37 @@ def ask_llm(prompt: str, model: str = "gpt-4"):
     if openai_key and openai is not None:
         openai.api_key = openai_key
         try:
-            resp = openai.ChatCompletion.create(
-                model=model,
-                messages=[{"role": "user", "content": prompt}],
-                max_tokens=1024,
-                temperature=0.2,
-                stream=True,
-            )
-            full_text = ""
-            for event in resp:
-                if hasattr(event, 'choices') and len(event.choices) > 0:
-                    delta = event.choices[0].delta
-                    if hasattr(delta, 'content') and delta.content:
-                        full_text += delta.content
-                        yield full_text
-                    elif isinstance(delta, dict) and 'content' in delta:
-                        content = delta.get('content', '')
+            # Try using the new OpenAI v1.0+ API first
+            if hasattr(openai, 'OpenAI'):
+                client = openai.OpenAI(api_key=openai_key)
+                resp = client.chat.completions.create(
+                    model=model,
+                    messages=[{"role": "user", "content": prompt}],
+                    max_tokens=1024,
+                    temperature=0.2,
+                    stream=True,
+                )
+                full_text = ""
+                for event in resp:
+                    if event.choices and len(event.choices) > 0:
+                        delta = event.choices[0].delta
+                        if delta.content:
+                            full_text += delta.content
+                            yield full_text
+            else:
+                # Fall back to legacy API
+                resp = openai.ChatCompletion.create(
+                    model=model,
+                    messages=[{"role": "user", "content": prompt}],
+                    max_tokens=1024,
+                    temperature=0.2,
+                    stream=True,
+                )
+                full_text = ""
+                for event in resp:
+                    if hasattr(event, 'choices') and len(event.choices) > 0:
+                        delta = event.choices[0].delta
+                        content = delta.get('content', '') if isinstance(delta, dict) else getattr(delta, 'content', '')
                         if content:
                             full_text += content
                             yield full_text

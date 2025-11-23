@@ -287,7 +287,7 @@ if st.session_state.context_text and "⚠️" not in st.session_state.context_te
     
     with col3:
         if st.session_state.show_full_text:
-            if st.button("CloseOperation Full Text"):
+            if st.button("Close Full Text"):
                 st.session_state.show_full_text = False
     
     if st.session_state.show_full_text:
