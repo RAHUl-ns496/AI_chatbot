@@ -22,7 +22,6 @@ def ask_llm(prompt: str, model: str = "gpt-4"):
 
     # --- OpenAI path (streaming) ---
     if openai_key and openai is not None:
-        openai.api_key = openai_key
         try:
             # Try using the new OpenAI v1.0+ API first
             if hasattr(openai, 'OpenAI'):
@@ -42,7 +41,8 @@ def ask_llm(prompt: str, model: str = "gpt-4"):
                             full_text += delta.content
                             yield full_text
             else:
-                # Fall back to legacy API
+                # Fall back to legacy API (v0.x)
+                openai.api_key = openai_key
                 resp = openai.ChatCompletion.create(
                     model=model,
                     messages=[{"role": "user", "content": prompt}],
@@ -54,7 +54,11 @@ def ask_llm(prompt: str, model: str = "gpt-4"):
                 for event in resp:
                     if hasattr(event, 'choices') and len(event.choices) > 0:
                         delta = event.choices[0].delta
-                        content = delta.get('content', '') if isinstance(delta, dict) else getattr(delta, 'content', '')
+                        # Legacy API: delta can be dict or object
+                        if isinstance(delta, dict):
+                            content = delta.get('content', '')
+                        else:
+                            content = getattr(delta, 'content', '')
                         if content:
                             full_text += content
                             yield full_text
