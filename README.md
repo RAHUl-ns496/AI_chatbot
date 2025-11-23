@@ -19,8 +19,8 @@ This app is ready to deploy on Streamlit Community Cloud! Follow these steps:
 2. **Create New App**
    - Click "New app" button
    - Select this repository: `RAHUl-ns496/AI_chatbot`
-   - Select branch: `copilot/prepare-streamlit-deployment` (or `main` after merging)
-   - Main file path: `OCR chatbot.py`
+   - Select branch: `main`
+   - Main file path: `app.py`
    - Click "Deploy"
 
 3. **Configure Secrets**
@@ -32,7 +32,7 @@ This app is ready to deploy on Streamlit Community Cloud! Follow these steps:
    - Click "Save"
 
 4. **Wait for Deployment**
-   - Streamlit Cloud will automatically install dependencies from `requirement.txt`
+   - Streamlit Cloud will automatically install dependencies from `requirements.txt`
    - System packages (tesseract-ocr) will be installed from `apt.txt`
    - The app will be live at `https://[your-app-name].streamlit.app`
 
@@ -40,7 +40,7 @@ This app is ready to deploy on Streamlit Community Cloud! Follow these steps:
 
 To run locally with Ollama (no API key needed):
 ```bash
-streamlit run "OCR chatbot.py"
+streamlit run app.py
 ```
 
 The app will automatically use Ollama if `OPENAI_API_KEY` is not set.
