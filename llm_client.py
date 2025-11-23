@@ -13,25 +13,33 @@ except Exception:
 def ask_llm(prompt: str, model: str = "gpt-4"):
     """
     Unified LLM interface:
-    - If OPENAI_API_KEY is set and openai package available -> call OpenAI (single response)
+    - If OPENAI_API_KEY is set and openai package available -> call OpenAI with streaming (requires openai>=1.0.0)
     - Else, if OLLAMA_HOST is set (or default localhost:11434) -> call Ollama streaming endpoint
     This function yields partial responses (generator) to match the existing app streaming code.
     """
     openai_key = os.environ.get("OPENAI_API_KEY")
     ollama_host = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
 
-    # --- OpenAI path (non-streaming) ---
+    # --- OpenAI path (streaming) ---
     if openai_key and openai is not None:
-        openai.api_key = openai_key
         try:
-            resp = openai.ChatCompletion.create(
+            # Use OpenAI v1.0+ API (required)
+            client = openai.OpenAI(api_key=openai_key)
+            resp = client.chat.completions.create(
                 model=model,
                 messages=[{"role": "user", "content": prompt}],
                 max_tokens=1024,
                 temperature=0.2,
+                stream=True,
             )
-            text = resp.choices[0].message.content
-            yield text
+            full_text = ""
+            for event in resp:
+                if event.choices and len(event.choices) > 0:
+                    delta = event.choices[0].delta
+                    content = getattr(delta, 'content', None)
+                    if content:
+                        full_text += content
+                        yield full_text
         except Exception as e:
             yield f"❌ OpenAI error: {e}"
         return

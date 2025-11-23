@@ -287,7 +287,7 @@ if st.session_state.context_text and "⚠️" not in st.session_state.context_te
     
     with col3:
         if st.session_state.show_full_text:
-            if st.button("CloseOperation Full Text"):
+            if st.button("Close Full Text"):
                 st.session_state.show_full_text = False
     
     if st.session_state.show_full_text:
@@ -302,10 +302,10 @@ if st.session_state.context_text and "⚠️" not in st.session_state.context_te
         st.markdown('</div>', unsafe_allow_html=True)
 
 # -----------------------------------------------------------
-# 💬 Display Chat History — FIXED SYNTAX
+# 💬 Display Chat History
 # -----------------------------------------------------------
 for msg in st.session_state.messages:
-    with st.chat_message(msg["role"]):  # ✅ CORRECTED: Added missing parenthesis
+    with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
 
 # -----------------------------------------------------------
