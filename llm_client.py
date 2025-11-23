@@ -37,7 +37,7 @@ def ask_llm(prompt: str, model: str = "gpt-4"):
                 for event in resp:
                     if event.choices and len(event.choices) > 0:
                         delta = event.choices[0].delta
-                        if delta.content:
+                        if delta and delta.content:
                             full_text += delta.content
                             yield full_text
             else:
